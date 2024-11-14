@@ -4,7 +4,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form"
+
 
 export const AduuiSchema = z.object({
   student_no: z.string().min(1).max(255),
@@ -31,6 +41,10 @@ function Aduui() {
     }
   };
 
+  const form = useForm<z.infer<typeof AduuiSchema>>({
+    resolver: zodResolver(AduuiSchema),
+  })
+
   return (
     <div className="h-screen w-screen bg-blue-200 flex justify-center items-center">
       <Card className="w-1/3">
@@ -43,57 +57,117 @@ function Aduui() {
           </div>
 
           {!useStudentNumber ? (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="lastName" className="text-gray-600">
-                  Last Name
-                </Label>
-                <Input id="lastName" type="text" placeholder="Enter your last name" className="mt-1 w-full" />
-              </div>
+              <div className="space-y-4">
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="lastname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Last name" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          </div>
 
-              <div>
-                <Label htmlFor="firstName" className="text-gray-600">
-                  First Name
-                </Label>
-                <Input id="firstName" type="text" placeholder="Enter your first name" className="mt-1 w-full" />
-              </div>
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="firstname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your First Name" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          </div>
 
-              <div>
-                <Label htmlFor="middleName" className="text-gray-600">
-                  Middle Name
-                </Label>
-                <Input id="middleName" type="text" placeholder="Enter your middle name" className="mt-1 w-full" />
-              </div>
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="middlename"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Middle Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Middle Name" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          </div>
 
-              <div>
-                <Label htmlFor="birthday" className="text-gray-600">
-                  Birthday
-                </Label>
-                <Input id="birthday" type="date" className="mt-1 w-full" />
-              </div>
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="birth_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Brithday</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="Enter your Brithday" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
             </div>
+
+          </div>
           ) : (
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="student_no" className="text-gray-600">
-                  Student Number
-                </Label>
-                <Input
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="student_no"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Student Number</FormLabel>
+              <FormControl>
+              <Input
                   id="student_no"
                   type="text"
                   placeholder="Enter your student number"
                   className="mt-1 w-full"
                   pattern="\d*"
-                  onChange={handleStudentIdChange}
-                />
-                {studentIdError && <p className="text-red-500 text-sm mt-1">{studentIdError}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="birthday" className="text-gray-600">
-                  Birthday
-                </Label>
-                <Input id="birthday" type="date" className="mt-1 w-full" />
+                  onChange={handleStudentIdChange} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {studentIdError && <p className="text-red-500 text-sm mt-1">{studentIdError}</p>}
+          </div>
+          
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={form.control}
+          name="birth_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Brithday</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
               </div>
             </div>
           )}
