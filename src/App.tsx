@@ -537,8 +537,6 @@ const App: React.FC = () => {
               <p className="text-sm text-gray-600">Company: {formValues.company}</p>
               <p className="text-sm text-gray-600">Have you been employed immediately 6 months or less after graduation?: {formValues.employed6months}</p>
               <p className="text-sm text-gray-600">In your first employment,which of the following has been your source?: {formValues.firstsource}</p>
-              <p className="text-sm text-gray-600">Email: [Your Email]</p>
-              <p className="text-sm text-gray-600">Phone: [Your Phone]</p>
             </div>
           )}
           </CardContent>
