@@ -21,34 +21,7 @@ import {
 } from "@/components/ui/select"*/
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Plus } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-
-const firstsource = [
-  {
-    id: "adamson job fair",
-    label: "Adamson Job Fair",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
-] as const
+//import { Checkbox } from '@/components/ui/checkbox';
 
 
 const AppSchema = z.object({
@@ -484,10 +457,7 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>In your first employment,which of the following has been your source?</FormLabel>
                 <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                
                 </FormControl>
             </FormItem>
               )}
