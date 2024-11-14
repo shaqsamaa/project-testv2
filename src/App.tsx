@@ -141,7 +141,7 @@ function Aduui() {
               <Input
                   id="student_no"
                   type="text"
-                  placeholder="Enter your student number"
+                  placeholder="Enter your student number" 
                   className="mt-1 w-full"
                   pattern="\d*"
                   onChange={handleStudentIdChange} />
