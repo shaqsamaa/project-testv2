@@ -6,14 +6,50 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form"
 /*import {
-  Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";*/
+  Select,
+} from "@/components/ui/select"*/
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Plus } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+
+const firstsource = [
+  {
+    id: "adamson job fair",
+    label: "Adamson Job Fair",
+  },
+  {
+    id: "home",
+    label: "Home",
+  },
+  {
+    id: "applications",
+    label: "Applications",
+  },
+  {
+    id: "desktop",
+    label: "Desktop",
+  },
+  {
+    id: "downloads",
+    label: "Downloads",
+  },
+  {
+    id: "documents",
+    label: "Documents",
+  },
+] as const
+
 
 const AppSchema = z.object({
   lastname: z.string({message: "Last Name is Requried"}).max(255).min(1),
@@ -26,21 +62,24 @@ const AppSchema = z.object({
   student_no: z.number({message: "Student Number is Requried"}).min(0).max(255),
   birth_date: z.coerce.date(),
   age: z.number({message: "Age is Requried"}),
-  gender: z.enum(["Male", "Female", "Other"], {message: "Gender is Requried"}),
+  gender: z.enum(["M", "F", "O"], {message: "Gender is Requried"}),
   home_address: z.string({message: "Address is Requried"}).max(255).min(1),
   number: z.number({message: "Number is Requried"}).min(1).max(255),
   telephone_number: z.number({message: "Number is Requried"}).min(1).max(255),
-  moblie_number: z.string().min(10, 'Invalid phone number'),
+  mobile_number: z.number().min(10, 'Invalid phone number'),
   email: z.string({message: "Email is Requried"}).email().min(1).max(255),
-  current_job_position: z.string({message: "Current Job Position is Requried"}).max(255).min(1),
-  company_affliation: z.string({message: "Company Affliation is Requried"}).max(255).min(1),
-  company_address: z.string({message: "Company Address is Requried"}).max(255).min(1),
-  apporoximate_monthly_salary: z.number({message: "Apporoximate Monthly Salary is Requried"}).min(1).max(255),
-  company: z.string({message: "Company Name is Requried"}).min(1).max(255),
+  current_job_position: z.string().max(255).min(1),
+  company_affliation: z.string().max(255).min(1),
+  company_address: z.string().max(255).min(1),
+  apporoximate_monthly_salary: z.number().min(1).max(255),
+  company: z.string().min(1).max(255),
+  employed6months: z.enum(["Yes", "No"]),
+  firstsource: z.enum(["Adamson Job Fair","Academic Department/Faculty Referral"])
 });
 
 
 type FormData = z.infer<typeof AppSchema>;
+
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -61,6 +100,10 @@ const App: React.FC = () => {
   const handleAddCompany =() =>{
 
   };
+
+  const form = useForm<z.infer<typeof AppSchema>>({
+    resolver: zodResolver(AppSchema),
+  })
 
   const formValues = getValues();
 
@@ -86,257 +129,423 @@ const App: React.FC = () => {
         <CardContent className="space-y-6">
           {/* Step 1 */}
           {currentStep === 1 && (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="lastname" className="text-gray-600 font-medium"> Last Name</Label>
-                  <Controller
-                    name="lastname"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Last Name" />
-                    )}
-                  />
-                  {errors.lastname && <p className="text-red-500 text-sm">{errors.lastname.message}</p>}
-                </div>
+             <div className="space-y-4">
+          <div>
+        <Form {...form}> 
+          <FormField
+          control={control}
+          name="lastname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Last name" {...field} />
+              </FormControl>
+              <FormDescription>
+              
+              </FormDescription>
+            </FormItem>
+              )}
+            />
+        </Form>
+          {errors.lastname && <p className="text-red-500 text-sm">{errors.lastname.message}</p>}
+           </div>
 
-                <div>
-                  <Label htmlFor="firstname" className="text-gray-600 font-medium">First Name</Label>
-                  <Controller
-                    name="firstname"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your First Name" />
-                    )}
-                  />
-                  {errors.firstname && <p className="text-red-500 text-sm">{errors.firstname.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="firstname"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your First name" {...field} />
+              </FormControl>
+              <FormDescription>
 
-                <div>
-                  <Label htmlFor="middlename" className="text-gray-600 font-medium">Middle name</Label>
-                  <Controller
-                    name="middlename"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type ="text" placeholder="Enter your Middle name" />
-                    )}
-                  />
-                  {errors.middlename && <p className="text-red-500 text-sm">{errors.middlename.message}</p>}
-                </div>
+              </FormDescription>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.firstname && <p className="text-red-500 text-sm">{errors.firstname.message}</p>}
+           </div>
 
-                <div>
-                  <Label htmlFor="year_graduated" className="text-gray-600 font-medium">Year Graduated</Label>
-                  <Controller
-                  name="year_graduated"
-                  control={control}
-                  render={({field}) =>(
-                     <Input {...field} type="number" placeholder="Enter Graduation Year" />
-                    )}
-                  />
-                  {errors.year_graduated && <p className="text-red-500 text-sm">{errors.year_graduated.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="middlename"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Middle name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Middle name" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.middlename && <p className="text-red-500 text-sm">{errors.middlename.message}</p>}
+           </div>
+          
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="year_graduated"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Year Graduated</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter your Year Graduated" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.year_graduated && <p className="text-red-500 text-sm">{errors.year_graduated.message}</p>}
+           </div>
 
-                <div>
-                  <Label htmlFor="course" className="text-gray-600 font-medium">Course</Label>
-                  <Controller
-                    name="course"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field}  type="text" placeholder="Enter your course" />
-                    )}
-                  />
-                  {errors.course && <p className="text-red-500 text-sm">{errors.course.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="course"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course</FormLabel>
+              <FormControl>
+                <Input  placeholder="Enter your Year Coruse" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.course && <p className="text-red-500 text-sm">{errors.course.message}</p>}
+           </div>
 
-                <div>
-                  <Label htmlFor="student_no" className="text-gray-600 font-medium">Student Number</Label>
-                  <Controller
-                    name="student_no"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Student Number" />
-                    )}
-                  />
-                  {errors.student_no && <p className="text-red-500 text-sm">{errors.student_no.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="student_no"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Student Number</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter your Year student Number" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.student_no && <p className="text-red-500 text-sm">{errors.student_no.message}</p>}
+           </div>
 
-                <div>
-                <Label htmlFor="birth_date" className="text-gray-600 font-medium">Birth Date</Label>
-                  <Controller
-                    name="birth_date"
-                    control={control}
-                    render={({ field }) => (
-                    <Input {...field} type="date" />
-                  )}
-                  />
-                  {errors.birth_date && <p className="text-red-500 text-sm">{errors.birth_date.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="birth_date"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Birth Date</FormLabel>
+              <FormControl>
+                <Input type="date" placeholder="" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.birth_date && <p className="text-red-500 text-sm">{errors.birth_date.message}</p>}
+           </div>
 
-                <div>
-                  <Label htmlFor="age" className="text-gray-600 font-medium">Age</Label>
-                  <Controller
-                    name="age"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Age" />
-                    )}
-                  />
-                  {errors.age && <p className="text-red-500 text-sm">{errors.age.message}</p>}
-                </div>
+              <div>
+          <Form {...form}> 
+            <FormField
+            control={control}
+            name="age"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Age</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter your Age" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.age && <p className="text-red-500 text-sm">{errors.age.message}</p>}
+           </div>
 
-                <div>
-                <Label htmlFor="gender" className="text-gray-600 font-medium">Gender</Label>
-                  <Controller
-                    name="gender"
-                    control={control}
-                    render={({ field }) => (
-                      <select {...field} className="w-full p-2 border border-gray-300 rounded">
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    )}
-                   />
-                  {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
+          <div>
+          <Form {...form}> 
+          <FormField
+          control={control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+                <FormControl>
+                <RadioGroup value={field.value}  onValueChange={field.onChange} className="flex space-x-4"  >
+                <div className="flex space-x-4">
+                    <div>
+                      <RadioGroupItem value="Male" id="male" />
+                        <Label htmlFor="male">Male</Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="Female" id="female" />
+                        <Label htmlFor="female">Female</Label>
+                      </div>
                 </div>
+                  </RadioGroup>
+                  </FormControl>
+            </FormItem>
+              )}
+            />
+        </Form>
+          {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
+          </div>
 
-                <div>
-                <Label htmlFor="home_address" className="text-gray-600 font-medium">Home Address</Label>
-                  <Controller
-                    name="home_address"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Home Address"/>
-                    )}
-                   />
-                  {errors.home_address && <p className="text-red-500 text-sm">{errors.home_address.message}</p>}
-                </div>
+              <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="home_address"
+            render={({ field }) => (
+            <FormItem>
+              <FormLabel>Home Address</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Home Address" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.home_address && <p className="text-red-500 text-sm">{errors.home_address.message}</p>}
+            </div>
 
-                <div>
-                <Label htmlFor="telephone_number" className="text-gray-600 font-medium">Phone Number</Label>
-                  <Controller
-                    name="telephone_number"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Telephone Number"/>
-                    )}
-                   />
-                  {errors.telephone_number && <p className="text-red-500 text-sm">{errors.telephone_number.message}</p>}
-                </div>
+            <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="telephone_number"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Telephone Number</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter your Telephone Number" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.telephone_number && <p className="text-red-500 text-sm">{errors.telephone_number.message}</p>}
+          </div>
 
-                <div>
-                <Label htmlFor="number" className="text-gray-600 font-medium">Number</Label>
-                  <Controller
-                    name="number"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Number"/>
-                    )}
-                   />
-                  {errors.number && <p className="text-red-500 text-sm">{errors.number.message}</p>}
-                </div>
+            <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="mobile_number"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Mobile Number</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Enter your Mobile Number" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.mobile_number && <p className="text-red-500 text-sm">{errors.mobile_number.message}</p>}
+          </div>
+              <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Enter your Email" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+          </div>
+              <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="current_job_position"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Current Job Position</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Current Job Position" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.current_job_position && <p className="text-red-500 text-sm">{errors.current_job_position.message}</p>}
+          </div>
+               <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="company_affliation"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Company Affliation</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Company Affliation" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.company_affliation && <p className="text-red-500 text-sm">{errors.company_affliation.message}</p>}
+          </div>
+              <div>
+            <Form {...form}> 
+            <FormField
+            control={control}
+            name="company_address"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Company Affliation</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Company Address" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          {errors.company_address && <p className="text-red-500 text-sm">{errors.company_address.message}</p>}
+          </div>
+              <div>
+                <Form {...form}> 
+            <FormField
+            control={control}
+            name="apporoximate_monthly_salary"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Apporoximate Monthly Salary</FormLabel>
+              <FormControl>
+                <Input  type="decimal" placeholder="Enter your Apporoximate Monthly Salary" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+            {errors.apporoximate_monthly_salary && <p className="text-red-500 text-sm">{errors.apporoximate_monthly_salary.message}</p>}
+            </div>
 
-                <div>
-                  <Label htmlFor="email" className="text-gray-600 font-medium">Email</Label>
-                  <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="email" placeholder="Enter your email" />
-                    )}
-                  />
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+            <Form {...form}> 
+          <FormField
+          control={control}
+          name="employed6months"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Have you been employed immediately 6 months or less after graduation?</FormLabel>
+                <FormControl>
+                <RadioGroup value={field.value}  onValueChange={field.onChange} className="flex space-x-4"  >
+                <div className="flex space-x-4">
+                    <div>
+                      <RadioGroupItem value="Yes" id="Yes" />
+                        <Label htmlFor="Yes">Yes</Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="No" id="No" />
+                        <Label htmlFor="No">No</Label>
+                      </div>
                 </div>
+                  </RadioGroup>
+                  </FormControl>
+            </FormItem>
+              )}
+            />
+        </Form>
+        {errors.employed6months && <p className="text-red-500 text-sm">{errors.employed6months.message}</p>}
 
-                <div>
-                  <Label htmlFor="current_job_position" className="text-gray-600 font-medium">Current Job Position</Label>
-                  <Controller
-                    name="current_job_position"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Current Job Position" />
-                    )}
-                  />
-                  {errors.current_job_position && <p className="text-red-500 text-sm">{errors.current_job_position.message}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="company_affliation" className="text-gray-600 font-medium">Company Affliation</Label>
-                  <Controller
-                    name="company_affliation"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Company Affliation" />
-                    )}
-                  />
-                  {errors.company_affliation && <p className="text-red-500 text-sm">{errors.company_affliation.message}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="company_address" className="text-gray-600 font-medium">Company Address</Label>
-                  <Controller
-                    name="company_address"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Company Address" />
-                    )}
-                  />
-                  {errors.company_address && <p className="text-red-500 text-sm">{errors.company_address.message}</p>}
-                </div>
-
-                <div>
-                <Label htmlFor="apporoximate_monthly_salary" className="text-gray-600 font-medium">Apporoximate Monthly Salary</Label>
-                  <Controller
-                    name="apporoximate_monthly_salary"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Apporoximate Monthly Salary"/>
-                    )}
-                   />
-                  {errors.apporoximate_monthly_salary && <p className="text-red-500 text-sm">{errors.apporoximate_monthly_salary.message}</p>}
-                </div>
-              </div>
-            )}
+        <div>
+          <Form {...form}> 
+          <FormField
+          control={control}
+          name="firstsource"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>In your first employment,which of the following has been your source?</FormLabel>
+                <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                </FormControl>
+            </FormItem>
+              )}
+            />
+        </Form>
+          {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
+          </div>
+          </div>
+          )}
 
           {/* Step 2 */}
           {currentStep === 2 && (
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="company" className="text-gray-600 font-medium">Company Name</Label>
-                  <Controller
-                    name="company"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="text" placeholder="Enter your Company" />
-                    )}
-                  />
-                  <Button onClick={handleAddCompany} className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
-                    Add Employment Record
-                  </Button>
-                  {errors.company && <p className="text-red-500 text-sm">{errors.company.message}</p>}
-                </div>
+                <Form {...form}> 
+                  <FormField
+                  control={control}
+                  name="company"
+                  render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <FormControl>
+                <Input placeholder="Enter your Company" {...field} />
+              </FormControl>
+            </FormItem>
+              )}
+            />
+          </Form>
+          <Button onClick={handleAddCompany} className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-2">
+            <Plus />
+              <span>Add Employment Record</span>
+              </Button>
+              {errors.company && <p className="text-red-500 text-sm">{errors.company.message}</p>}
+              </div>
 
                 <div>
                   <Label htmlFor="moblie_number" className="text-gray-600 font-medium">
                     Moblie Number
                   </Label>
                   <Controller
-                    name="moblie_number"
+                    name="mobile_number"
                     control={control}
                     render={({ field }) => (
                       <Input {...field} type="number" placeholder="Enter your Moblie Number" />
                     )}
                   />
-                  {errors.moblie_number && <p className="text-red-500 text-sm">{errors.moblie_number.message}</p>}
+                  {errors.mobile_number && <p className="text-red-500 text-sm">{errors.mobile_number.message}</p>}
                 </div>
+
+
               </div>
             </form>
           )}
 
           {/* Step 3: Confirmation */}
           {currentStep === 3 && (
-            <div className="text-center space-y-4">
+            <div className="text-left space-y-4">
               <p className="text-lg font-semibold text-blue-700">Confirm Your Information</p>
               <p className="text-sm text-gray-600">Please review and confirm your details.</p>
               <p className="text-sm text-gray-600">Last Name: {formValues.lastname}</p>
@@ -350,12 +559,14 @@ const App: React.FC = () => {
               <p className="text-sm text-gray-600">Gender: {formValues.gender}</p>
               <p className="text-sm text-gray-600">Home Address: {formValues.home_address}</p>
               <p className="text-sm text-gray-600">Telephone Phone: {formValues.telephone_number}</p>
-              <p className="text-sm text-gray-600">Mobile Number: {formValues.moblie_number}</p>
+              <p className="text-sm text-gray-600">Mobile Number: {formValues.mobile_number}</p>
               <p className="text-sm text-gray-600">Current Job Position: {formValues.current_job_position}</p>
               <p className="text-sm text-gray-600">Company Affliation: {formValues.company_affliation}</p>
               <p className="text-sm text-gray-600">Company Address: {formValues.company_address}</p>
               <p className="text-sm text-gray-600">Apporoximate Monthly Salary: {formValues.apporoximate_monthly_salary}</p>
               <p className="text-sm text-gray-600">Company: {formValues.company}</p>
+              <p className="text-sm text-gray-600">Have you been employed immediately 6 months or less after graduation?: {formValues.employed6months}</p>
+              <p className="text-sm text-gray-600">In your first employment,which of the following has been your source?: {formValues.firstsource}</p>
               <p className="text-sm text-gray-600">Email: [Your Email]</p>
               <p className="text-sm text-gray-600">Phone: [Your Phone]</p>
             </div>
