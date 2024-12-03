@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { Separator } from "@/components/ui/separator.tsx";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -20,47 +21,77 @@ import {
   Select,
 } from "@/components/ui/select"*/
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Plus } from 'lucide-react';
 //import { Checkbox } from '@/components/ui/checkbox';
 
 
 const AppSchema = z.object({
-  lastname: z.string({message: "Last Name is Requried"}).max(255).min(1),
-  firstname: z.string({message: "First Name is Requried"}).max(255).min(1),
-  middlename: z.string({message: "Middle Name is Requried"}).max(255).min(1),
-  year_graduated: z.coerce.number({ message: "Year must be a digit "})
-  .min(1000, "Year graduated is reuired")
-  .max(9999, "Year graduated must be 4 digits"),
-  course: z.string({message: "Course is Requried"}).max(255).min(1),
-  student_no: z.number({message: "Student Number is Requried"}).min(0).max(255),
-  birth_date: z.coerce.date(),
-  age: z.number({message: "Age is Requried"}),
-  gender: z.enum(["M", "F", "O"], {message: "Gender is Requried"}),
-  home_address: z.string({message: "Address is Requried"}).max(255).min(1),
-  number: z.number({message: "Number is Requried"}).min(1).max(255),
-  telephone_number: z.number({message: "Number is Requried"}).min(1).max(255),
-  mobile_number: z.number().min(10, 'Invalid phone number'),
-  email: z.string({message: "Email is Requried"}).email().min(1).max(255),
+lastname: z.string({message: "Last Name is Required"}).max(255).min(1),
+firstname: z.string({message: "First Name is Required"}).max(255).min(1),
+middlename: z.string({message: "Middle Name is Required"}).max(255).min(1),
+year_graduated: z.coerce.number({ message: "Year must be a digit"})
+    .min(1000, "Year graduated is required")
+    .max(9999, "Year graduated must be 4 digits"),
+course: z.string({message: "Course is Required"}).max(255).min(1),
+student_no: z.coerce.number({message: "Student Number is Required"}),
+birth_date: z.coerce.date(),
+age: z.coerce.number({message: "Age is Required"}),
+gender: z.enum(["Male", "Female", "Others"], {message: "Gender is Required"}),
+home_address: z.string({message: "Address is Required"}).max(255).min(1),
+number: z.coerce.number({message: "Number is Required"}).min(1).max(255),
+telephone_number: z.coerce.number({message: "Number is Required"}),
+mobile_number: z.coerce.number({message: "Mobile Number is Required"}),
+email: z.string({message: "Email is Required"}).email().min(1).max(255),
   current_job_position: z.string().max(255).min(1),
   company_affliation: z.string().max(255).min(1),
   company_address: z.string().max(255).min(1),
-  apporoximate_monthly_salary: z.number().min(1).max(255),
+  apporoximate_monthly_salary: z.coerce.number(),
   company: z.string().min(1).max(255),
-  employed6months: z.enum(["Yes", "No"]),
-  firstsource: z.enum(["Adamson Job Fair","Academic Department/Faculty Referral"])
-});
+  employed6months: z.enum(["Yes", "No", "Others"]),
+  firstsource: z.enum(["Adamson Job Fair","Academic Department/Faculty Referral"]),
 
+  name_bussines: z.string().min(1).max(255),
+  nature_business: z.string().min(1).max(255),
+  role_business: z.string().min(1).max(255),
+  monthly_profit: z.string().min(1).max(255),
+  bussiness_phonenum: z.string().min(1).max(255),
+  prof_growth: z.string().min(1).max(255),
+
+  employment_record: z.array(z.object({
+    company_name: z.string().min(1).max(255),
+    date_employed: z.string().min(1).max(255),
+    employee_position_status: z.string().min(1).max(255),
+    approximate_monthly_salary: z.string().min(1).max(255),
+})),
+
+});
 
 type FormData = z.infer<typeof AppSchema>;
 
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const { control,handleSubmit,formState: { errors }, reset, getValues} = useForm<FormData>({resolver: zodResolver(AppSchema),
+  const { control, handleSubmit, formState: { errors }, reset, getValues} = useForm<FormData>({
+    resolver: zodResolver(AppSchema),
+    defaultValues: {
+      employment_record: [
+          {
+              company_name: "", 
+              date_employed: "", 
+              employee_position_status: "", 
+              approximate_monthly_salary: ""
+          },
+      ],
+    },
   });
 
-  const handleNext = () => setCurrentStep((prev) => prev + 1);
-  const handlePrevious = () => setCurrentStep((prev) => prev - 1);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "employment_record",
+  });
+
+ 
+const handleNext = () => setCurrentStep((prev) => prev + 1);
+const handlePrevious = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
 
   const onSubmit = (data: FormData) => {
@@ -70,10 +101,7 @@ const App: React.FC = () => {
     setCurrentStep(1); 
   };
 
-  const handleAddCompany =() =>{
-
-  };
-
+  
   const form = useForm<z.infer<typeof AppSchema>>({
     resolver: zodResolver(AppSchema),
   })
@@ -81,30 +109,29 @@ const App: React.FC = () => {
   const formValues = getValues();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-100 to-blue-300 p-4">
-      <div className="w-full max-w-lg">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-100 to-blue-300 p-8">
+      <div className="w-full max-w-3xl">
         <h2 className="text-2xl sm:text-3xl font-extrabold mb-6 text-center text-blue-800">Adamson University Tracer Survey Form</h2>
         {/* Step Indicator */}
         <div className="flex justify-center mb-6 space-x-4">
-          {['Step 1', 'Step 2', 'Step 3'].map((step, index) => (
+          {[`Step 1`, `Step 2`, `Step 3`].map((step, index) => (
             <div
               key={index}
-              className={`relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 ${
+              className={`flex items-center justify-center w-12 h-12 rounded-full border-2 ${
                 currentStep >= index + 1 ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-blue-500 border-blue-300'
               } transition duration-200`}
             >
-              <span className="text-xs sm:text-sm font-semibold">{index + 1}</span>
+              <span className="text-lg font-semibold">{index + 1}</span>
             </div>
           ))}
         </div>
-
-      <Card className="bg=white shadow-lg rounded-lg p-4">
+      <Form {...form}> 
+      <Card className="bg-white shadow-xl rounded-lx p-8">
         <CardContent className="space-y-6">
           {/* Step 1 */}
           {currentStep === 1 && (
              <div className="space-y-4">
-          <div>
-        <Form {...form}> 
+          <p className="text-xs">Please fill in required fields.</p>
           <FormField
           control={control}
           name="lastname"
@@ -112,41 +139,29 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Last Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your Last name" {...field} />
+                <Input placeholder="Enter your Last name" type="text" inputMode="text" {...field} />
               </FormControl>
               <FormDescription>
               
               </FormDescription>
             </FormItem>
-              )}
-            />
-        </Form>
-          {errors.lastname && <p className="text-red-500 text-sm">{errors.lastname.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
-            <FormField
+              )}/>
+          {errors.lastname && <p className="text-red-400 mt-2">{errors.lastname.message}</p>}
+          <FormField
             control={control}
             name="firstname"
             render={({ field }) => (
             <FormItem>
               <FormLabel>First Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your First name" {...field} />
+                <Input placeholder="Enter your First name" type="text" inputMode="text" {...field} />
               </FormControl>
               <FormDescription>
 
               </FormDescription>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.firstname && <p className="text-red-500 text-sm">{errors.firstname.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="middlename"
@@ -157,14 +172,8 @@ const App: React.FC = () => {
                 <Input placeholder="Enter your Middle name" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.middlename && <p className="text-red-500 text-sm">{errors.middlename.message}</p>}
-           </div>
-          
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="year_graduated"
@@ -172,17 +181,11 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Year Graduated</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter your Year Graduated" {...field} />
+                <Input type="number" placeholder="Enter your Year Graduated" inputMode="tel" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.year_graduated && <p className="text-red-500 text-sm">{errors.year_graduated.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="course"
@@ -190,17 +193,12 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Course</FormLabel>
               <FormControl>
-                <Input  placeholder="Enter your Year Coruse" {...field} />
+                <Input placeholder="Enter your Year Coruse" {...field} />
               </FormControl>
             </FormItem>
               )}
             />
-          </Form>
           {errors.course && <p className="text-red-500 text-sm">{errors.course.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="student_no"
@@ -208,17 +206,13 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Student Number</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter your Year student Number" {...field} />
+                <Input type="number" placeholder="Enter your student Number"  inputMode="numeric"
+                             {...field} />
               </FormControl>
             </FormItem>
               )}
             />
-          </Form>
           {errors.student_no && <p className="text-red-500 text-sm">{errors.student_no.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="birth_date"
@@ -226,17 +220,11 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Birth Date</FormLabel>
               <FormControl>
-                <Input type="date" placeholder="" {...field} />
+                <Input  placeholder="" type="date" inputMode="numeric" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.birth_date && <p className="text-red-500 text-sm">{errors.birth_date.message}</p>}
-           </div>
-
-              <div>
-          <Form {...form}> 
             <FormField
             control={control}
             name="age"
@@ -247,14 +235,8 @@ const App: React.FC = () => {
                 <Input type="number" placeholder="Enter your Age" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.age && <p className="text-red-500 text-sm">{errors.age.message}</p>}
-           </div>
-
-          <div>
-          <Form {...form}> 
           <FormField
           control={control}
           name="gender"
@@ -266,24 +248,22 @@ const App: React.FC = () => {
                 <div className="flex space-x-4">
                     <div>
                       <RadioGroupItem value="Male" id="male" />
-                        <Label htmlFor="male">Male</Label>
+                        <Label htmlFor="male"> Male</Label>
                     </div>
                     <div>
                       <RadioGroupItem value="Female" id="female" />
-                        <Label htmlFor="female">Female</Label>
+                        <Label htmlFor="female"> Female</Label>
+                      </div>
+                      <div>
+                      <RadioGroupItem value="Others" id="others" />
+                        <Label htmlFor="others"> Others</Label>
                       </div>
                 </div>
                   </RadioGroup>
                   </FormControl>
             </FormItem>
-              )}
-            />
-        </Form>
+              )}/>
           {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
-          </div>
-
-              <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="home_address"
@@ -291,17 +271,11 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>Home Address</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your Home Address" {...field} />
+                <Input placeholder="Enter your Home Address"  {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.home_address && <p className="text-red-500 text-sm">{errors.home_address.message}</p>}
-            </div>
-
-            <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="telephone_number"
@@ -309,17 +283,11 @@ const App: React.FC = () => {
               <FormItem>
               <FormLabel>Telephone Number</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter your Telephone Number" {...field} />
+                <Input type="number" placeholder="Enter your Telephone Number" inputMode="numeric" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.telephone_number && <p className="text-red-500 text-sm">{errors.telephone_number.message}</p>}
-          </div>
-
-            <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="mobile_number"
@@ -327,16 +295,11 @@ const App: React.FC = () => {
               <FormItem>
               <FormLabel>Mobile Number</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter your Mobile Number" {...field} />
+                <Input type="number" placeholder="Enter your Mobile Number" inputMode="text" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
-          {errors.mobile_number && <p className="text-red-500 text-sm">{errors.mobile_number.message}</p>}
-          </div>
-              <div>
-            <Form {...form}> 
+              )}/>
+          {errors.mobile_number && <p className="text-red-500 text-sm">{errors.mobile_number.message}</p>} 
             <FormField
             control={control}
             name="email"
@@ -344,16 +307,11 @@ const App: React.FC = () => {
               <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="Enter your Email" {...field} />
+                <Input type="email" placeholder="Enter your Email"  inputMode= "email" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-          </div>
-              <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="current_job_position"
@@ -364,13 +322,8 @@ const App: React.FC = () => {
                 <Input placeholder="Enter your Current Job Position" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.current_job_position && <p className="text-red-500 text-sm">{errors.current_job_position.message}</p>}
-          </div>
-               <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="company_affliation"
@@ -381,30 +334,21 @@ const App: React.FC = () => {
                 <Input placeholder="Enter your Company Affliation" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
           {errors.company_affliation && <p className="text-red-500 text-sm">{errors.company_affliation.message}</p>}
-          </div>
-              <div>
-            <Form {...form}> 
             <FormField
             control={control}
             name="company_address"
             render={({ field }) => (
               <FormItem>
-              <FormLabel>Company Affliation</FormLabel>
+              <FormLabel>Company Address</FormLabel>
               <FormControl>
                 <Input placeholder="Enter your Company Address" {...field} />
               </FormControl>
             </FormItem>
               )}
             />
-          </Form>
           {errors.company_address && <p className="text-red-500 text-sm">{errors.company_address.message}</p>}
-          </div>
-              <div>
-                <Form {...form}> 
             <FormField
             control={control}
             name="apporoximate_monthly_salary"
@@ -412,16 +356,11 @@ const App: React.FC = () => {
               <FormItem>
               <FormLabel>Apporoximate Monthly Salary</FormLabel>
               <FormControl>
-                <Input  type="decimal" placeholder="Enter your Apporoximate Monthly Salary" {...field} />
+                <Input  type="number" placeholder="Enter your Apporoximate Monthly Salary" {...field} />
               </FormControl>
             </FormItem>
-              )}
-            />
-          </Form>
+              )}/>
             {errors.apporoximate_monthly_salary && <p className="text-red-500 text-sm">{errors.apporoximate_monthly_salary.message}</p>}
-            </div>
-
-            <Form {...form}> 
           <FormField
           control={control}
           name="employed6months"
@@ -433,23 +372,18 @@ const App: React.FC = () => {
                 <div className="flex space-x-4">
                     <div>
                       <RadioGroupItem value="Yes" id="Yes" />
-                        <Label htmlFor="Yes">Yes</Label>
+                        <Label htmlFor="yes"> Yes</Label>
                     </div>
                     <div>
                       <RadioGroupItem value="No" id="No" />
-                        <Label htmlFor="No">No</Label>
+                        <Label htmlFor="no"> No</Label>
                       </div>
                 </div>
                   </RadioGroup>
                   </FormControl>
             </FormItem>
-              )}
-            />
-        </Form>
+              )}/>
         {errors.employed6months && <p className="text-red-500 text-sm">{errors.employed6months.message}</p>}
-
-        <div>
-          <Form {...form}> 
           <FormField
           control={control}
           name="firstsource"
@@ -457,63 +391,167 @@ const App: React.FC = () => {
             <FormItem>
               <FormLabel>In your first employment,which of the following has been your source?</FormLabel>
                 <FormControl>
-                
+                <RadioGroup value={field.value}  onValueChange={field.onChange} className="flex space-x-4"  >
+                <div className="flex space-x-4">
+                    <div>
+                      <RadioGroupItem value="Adamson Job Fair" id="Adamson Job Fair" />
+                        <Label htmlFor="Adamson Job Fair"> Yes</Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem value="No" id="No" />
+                        <Label htmlFor="no"> No</Label>
+                      </div>
+                </div>
+                  </RadioGroup>
                 </FormControl>
             </FormItem>
-              )}
-            />
-        </Form>
-          {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
-          </div>
+              )} />
+          {errors.firstsource && <p className="text-red-500 text-sm">{errors.firstsource.message}</p>}
           </div>
           )}
-
+          
           {/* Step 2 */}
           {currentStep === 2 && (
             <form onSubmit={handleSubmit(onSubmit)}>
+              <p className="text-lg font-semibold  text-blue-700">Employment Records</p>
               <div className="space-y-4">
-                <div>
-                <Form {...form}> 
-                  <FormField
-                  control={control}
-                  name="company"
-                  render={({ field }) => (
-                  <FormItem>
-                  <FormLabel>Company</FormLabel>
+              {fields.map((field, index) => (
+            <div key={field.id} className="space-y-4 border-b pb-4">
+          <FormField
+          control={control}
+          name={`employment_record.${index}.company_name`}
+          render={({ field }) => (
+          <FormItem>
+            <FormLabel>Company Name</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter Company Name" {...field} />
+            </FormControl>
+          </FormItem>
+        )} />
+        <FormField
+        control={control}
+        name={`employment_record.${index}.date_employed`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Date Employed</FormLabel>
+            <FormControl>
+              <Input type="date" {...field} />
+            </FormControl>
+          </FormItem>
+        )}/>
+      <FormField
+        control={control}
+        name={`employment_record.${index}.employee_position_status`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Position/Status</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter Position/Status" {...field} />
+            </FormControl>
+          </FormItem>
+        )}/>
+      <FormField
+        control={control}
+        name={`employment_record.${index}.approximate_monthly_salary`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Approximate Monthly Salary</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter Monthly Salary" type="number" {...field} />
+            </FormControl>
+          </FormItem>
+        )}/> 
+        <div className="flex items-end gap-2">
+        <Button variant="secondary" onClick={() =>
+        append({
+        company_name: "",
+        date_employed: "",
+        employee_position_status: "",
+        approximate_monthly_salary: "",
+      })
+    }
+    className="mt-4"
+  >
+    Add Employment Record 
+  </Button>
+      <div className="text-right">
+     <Button 
+        variant="destructive"
+        onClick={() => remove(index)}
+        className="mt-2"
+      >
+        Remove Employment Record
+      </Button>
+      </div>
+      </div>
+      </div>
+       ))}
+       
+        {/*For Self-Employment*/}
+        <p className="text-lg font-semibold  text-blue-700">For self-employment: please answer the following</p>
+        <div className="space-y-4">
+        <FormField
+            control={control}
+            name="name_bussines"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name of the Business</FormLabel>
                   <FormControl>
-                <Input placeholder="Enter your Company" {...field} />
-              </FormControl>
-            </FormItem>
-              )}
-            />
-          </Form>
-          <Button onClick={handleAddCompany} className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-2">
-            <Plus />
-              <span>Add Employment Record</span>
-              </Button>
-              {errors.company && <p className="text-red-500 text-sm">{errors.company.message}</p>}
-              </div>
-
-                <div>
-                  <Label htmlFor="moblie_number" className="text-gray-600 font-medium">
-                    Moblie Number
-                  </Label>
-                  <Controller
-                    name="mobile_number"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} type="number" placeholder="Enter your Moblie Number" />
-                    )}
-                  />
-                  {errors.mobile_number && <p className="text-red-500 text-sm">{errors.mobile_number.message}</p>}
-                </div>
-
-
-              </div>
-            </form>
-          )}
-
-          {/* Step 3: Confirmation */}
+                  <Input placeholder="Enter Name of the Business" type="text" {...field} />
+                  </FormControl>
+              </FormItem>
+               )}/>
+            <FormField
+            control={control}
+            name="nature_business"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nature of the Business</FormLabel>
+                  <FormControl>
+                  <Input placeholder="Enter Nature of the Business" type="text" {...field} />
+                  </FormControl>
+              </FormItem>
+                )}/>
+            <FormField
+            control={control}
+            name="role_business"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role in the Business</FormLabel>
+                  <FormControl>
+                  <Input placeholder="Enter Role in the Business" type="text" {...field} />
+                  </FormControl>
+              </FormItem>
+                )}/>
+            <FormField
+            control={control}
+            name="bussiness_phonenum"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Business Phone Numbers</FormLabel>
+                  <FormControl>
+                  <Input placeholder="Enter Business Phone Numbers" type="number" inputMode="tel" {...field} />
+                  </FormControl>
+              </FormItem>
+                )}/>
+              <Separator className="my-2" /> 
+              <p className="text-lg font-semibold  text-blue-700">Please write your experiences that will describe how you were able to apply the 3C’s you learned in the university</p> 
+            <FormField
+            control={control}
+            name="prof_growth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Professional Growth</FormLabel>
+                  <FormControl>
+                  <Input placeholder="Enter Professional Growth" type="text" inputMode="text" {...field} />
+                  </FormControl>
+              </FormItem>
+                )} />
+          </div>
+      </div>
+    </form>
+     )}
+            {/* Step 3: Confirmation */}
           {currentStep === 3 && (
             <div className="text-left space-y-4">
               <p className="text-lg font-semibold text-blue-700">Confirm Your Information</p>
@@ -524,12 +562,13 @@ const App: React.FC = () => {
               <p className="text-sm text-gray-600">Year Graduate: {formValues.year_graduated}</p>
               <p className="text-sm text-gray-600">Student Number: {formValues.student_no}</p>
               <p className="text-sm text-gray-600">Course: {formValues.course}</p>
-              <p className="text-sm text-gray-600">Birth Date: {formValues.birth_date}</p>
+              <p className="text-sm text-gray-600">Birth Date: {formValues.birth_date?.toString()}</p>
               <p className="text-sm text-gray-600">Age: {formValues.age}</p>
               <p className="text-sm text-gray-600">Gender: {formValues.gender}</p>
               <p className="text-sm text-gray-600">Home Address: {formValues.home_address}</p>
               <p className="text-sm text-gray-600">Telephone Phone: {formValues.telephone_number}</p>
               <p className="text-sm text-gray-600">Mobile Number: {formValues.mobile_number}</p>
+              <p className="text-sm text-gray-600">Email Address: {formValues.email}</p>
               <p className="text-sm text-gray-600">Current Job Position: {formValues.current_job_position}</p>
               <p className="text-sm text-gray-600">Company Affliation: {formValues.company_affliation}</p>
               <p className="text-sm text-gray-600">Company Address: {formValues.company_address}</p>
@@ -537,7 +576,27 @@ const App: React.FC = () => {
               <p className="text-sm text-gray-600">Company: {formValues.company}</p>
               <p className="text-sm text-gray-600">Have you been employed immediately 6 months or less after graduation?: {formValues.employed6months}</p>
               <p className="text-sm text-gray-600">In your first employment,which of the following has been your source?: {formValues.firstsource}</p>
-            </div>
+               
+              
+              {/*Employment Record Confirmation*/}
+              <p className="font-semibold text-lg text-blue-700">Employment Records</p>
+              {formValues.employment_record.map((record, index) => (
+                <div key={index} className="text-sm text-gray-600 space-y-2">
+                <p>Company: {record.company_name}</p>
+                <p>Date Employed: {record.date_employed?.toString()}</p>
+                <p>Employee Position Status: {record.employee_position_status}</p>
+                <p>Approximate Monthly Salary: {record.approximate_monthly_salary}</p>
+              </div>
+            ))}
+            
+             {/*For Self-Employment*/}
+             <p className="font-semibold text-lg text-blue-700">for Self-Employment</p>
+               <p className="text-sm text-gray-600">Name of the Business: {formValues.name_bussines}</p>
+               <p className="text-sm text-gray-600">Nature of the Business: {formValues.nature_business}</p>
+               <p className="text-sm text-gray-600">Role in the Business: {formValues.role_business}</p>
+               <p className="text-sm text-gray-600">Business Phone Numbers: {formValues.bussiness_phonenum}</p>
+               <p className="text-sm text-gray-600">Professional Growth: {formValues.prof_growth}</p>
+          </div>
           )}
           </CardContent>
 
@@ -559,6 +618,7 @@ const App: React.FC = () => {
             )}
           </div>
       </Card>
+      </Form>
     </div>
     </div>
   );
